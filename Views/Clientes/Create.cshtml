@@ -1,0 +1,119 @@
+﻿@model Proyecto.Models.Cliente
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h2 class="text-center my-4">Crear Cliente</h2>
+<div class="row">
+    <div class="d-flex justify-content-center">
+        <div class="card shadow-lg p-4 col-md-6 col-lg-5">
+            <form asp-action="Create" class="needs-validation" novalidate>
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <div class="mb-3">
+                    <label asp-for="NOMBRE" class="form-label">Nombre</label>
+                    <input asp-for="NOMBRE" class="form-control rounded-3" placeholder="Ingrese el nombre" required>
+                    <div class="invalid-feedback">
+                        El nombre es obligatorio.
+                    </div>
+                    <span asp-validation-for="NOMBRE" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="APELLIDO1" class="form-label">Primer Apellido</label>
+                    <input asp-for="APELLIDO1" class="form-control rounded-3" placeholder="Ingrese el primer apellido" required>
+                    <div class="invalid-feedback">
+                        El primer apellido es obligatorio.
+                    </div>
+                    <span asp-validation-for="APELLIDO1" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="APELLIDO2" class="form-label">Segundo Apellido</label>
+                    <input asp-for="APELLIDO2" class="form-control rounded-3" placeholder="Ingrese el segundo apellido" required>
+                    <div class="invalid-feedback">
+                        El segundo apellido es obligatorio.
+                    </div>
+                    <span asp-validation-for="APELLIDO2" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="CEDULA" class="form-label">Cédula</label>
+                    <input asp-for="CEDULA" class="form-control rounded-3" placeholder="Ingrese la cédula" required>
+                    <div class="invalid-feedback">
+                        La cédula es obligatoria.
+                    </div>
+                    <span asp-validation-for="CEDULA" class="text-danger"></span>
+                </div>
+
+              
+                <div class="d-flex justify-content-between">
+                    <a class="btn btn-outline-secondary" asp-action="Index">Volver</a>
+                    <input type="submit" value="Create" class="btn btn-success">
+                    <input type="submit" class="btn btn-success" value="Create Ajax" id="guardarAjax">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+
+<script>
+    (function () {
+        'use strict'
+
+
+        var forms = document.querySelectorAll('.needs-validation')
+
+
+        Array.prototype.slice.call(forms)
+            .forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+
+                    form.classList.add('was-validated')
+                }, false)
+            })
+    })()
+</script>
+
+
+<script>
+    $(document).ready(function(){
+        $('#guardarAjax').click(function(event){
+
+
+            var clienteData = {
+                NOMBRE: $('#nombre').val(),
+                APELLIDO1: $('#apellido1').val(),
+                APELLIDO2: $('#apellido2').val(),
+                CEDULA: $('#cedula').val(),
+                
+            };
+
+
+            $.ajax({
+                url:'@Url.Action("CreateAjax", "Clientes")',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(clienteData),
+                success: function(response) {
+                    $('#result').html('<p style="color: green;">' + response.message + '</p>');
+                },
+                error: function () {
+                    $('#result').html('<p style="color: red;">An error occurred while saving the person data.</p>');
+                }
+            });
+        });
+    });
+</script>

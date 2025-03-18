@@ -1,0 +1,49 @@
+﻿@model Proyecto.Models.Cliente
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Cliente</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="PKCLIENTE" />
+            <div class="form-group">
+                <label asp-for="CEDULA" class="control-label"></label>
+                <input asp-for="CEDULA" class="form-control" />
+                <span asp-validation-for="CEDULA" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="NOMBRE" class="control-label"></label>
+                <input asp-for="NOMBRE" class="form-control" />
+                <span asp-validation-for="NOMBRE" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="APELLIDO1" class="control-label"></label>
+                <input asp-for="APELLIDO1" class="form-control" />
+                <span asp-validation-for="APELLIDO1" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="APELLIDO2" class="control-label"></label>
+                <input asp-for="APELLIDO2" class="form-control" />
+                <span asp-validation-for="APELLIDO2" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

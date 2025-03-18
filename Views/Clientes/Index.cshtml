@@ -1,0 +1,149 @@
+﻿@model IEnumerable<Proyecto.Models.Cliente>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.CEDULA)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NOMBRE)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.APELLIDO1)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.APELLIDO2)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CEDULA)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NOMBRE)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.APELLIDO1)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.APELLIDO2)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.PKCLIENTE">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.PKCLIENTE">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.PKCLIENTE">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<input type="button" value="Descargar XML" class="btn btn-primary" onclick="descargarDatos('xml')" />
+<input type="button" value="Obtener XML" class="btn btn-primary" onclick="obtenerDatos('xml')" />
+
+<input type="button" value="Descargar JSON" class="btn btn-secondary" onclick="descargarDatos('json')" />
+<input type="button" value="Obtener JSON" class="btn btn-secondary" onclick="obtenerDatos('json')" />
+
+<table id="TableClientes" class="table table-striped">
+    <thead>
+        <tr>
+            <th>CEDULA</th>
+            <th>NOMBRE</th>
+            <th>APELLIDO1</th>
+            <th>APELLIDO2</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+<script type="text/javascript">
+    function obtenerDatos(tipo) {
+        console.log(`Entró al AJAX obtener ${tipo.toUpperCase()}`);
+
+        let url = tipo === 'xml' ? '@Url.Action("XML_Ajax", "Clientes")' : '@Url.Action("JsonAjax", "Clientes")';
+        let dataType = tipo === 'xml' ? 'xml' : 'json';
+
+        $.ajax({
+            type: "GET",
+            url: url,
+            dataType: dataType,
+            success: function (result) {
+                $('#TableClientes tbody').empty();
+
+                if (tipo === 'xml') {
+                    $(result).find('Cliente').each(function () {
+                        let row = $('<tr>');
+                        row.append('<td>' + $(this).find('CEDULA').text() + '</td>');
+                        row.append('<td>' + $(this).find('NOMBRE').text() + '</td>');
+                        row.append('<td>' + $(this).find('APELLIDO1').text() + '</td>');
+                        row.append('<td>' + $(this).find('APELLIDO2').text() + '</td>');
+                        $('#TableClientes tbody').append(row);
+                    });
+                } else {
+                    $.each(result, function (x, item) {
+                        let row = $('<tr>');
+                        row.append('<td>' + item.cedula + '</td>');
+                        row.append('<td>' + item.nombre + '</td>');
+                        row.append('<td>' + item.apellidO1 + '</td>');
+                        row.append('<td>' + item.apellidO2 + '</td>');
+                        $('#TableClientes tbody').append(row);
+                    });
+                }
+            },
+            error: function (error) {
+                console.error(error);
+                alert(`Hubo un error al obtener los clientes en formato ${tipo.toUpperCase()}.`);
+            }
+        });
+    }
+
+    function descargarDatos(tipo) {
+        console.log(`Entró al AJAX descargar ${tipo.toUpperCase()}`);
+
+        let url = tipo === 'xml' ? '@Url.Action("XML_Ajax", "Clientes")' : '@Url.Action("JsonAjax", "Clientes")';
+        let dataType = tipo === 'xml' ? 'xml' : 'json';
+
+        $.ajax({
+            type: "GET",
+            url: url,
+            dataType: dataType,
+            success: function (result) {
+                let data_str;
+                if (tipo === 'xml') {
+                    let xml_str = new XMLSerializer().serializeToString(result);
+                    data_str = "data:application/xml;charset=utf-8," + encodeURIComponent(xml_str);
+                } else {
+                    data_str = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(result));
+                }
+
+                let anchor = document.createElement("a");
+                anchor.setAttribute("href", data_str);
+                anchor.setAttribute("download", `clientes.${tipo}`);
+                document.body.appendChild(anchor);
+                anchor.click();
+                anchor.remove();
+            },
+            error: function (error) {
+                console.error(error);
+                alert(`Hubo un error al descargar el archivo ${tipo.toUpperCase()}.`);
+            }
+        });
+    }
+</script>
+
